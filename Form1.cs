@@ -62,33 +62,41 @@ namespace _01Basic
         {
             //충돌 방지 안돼
             //dataReceivedEvent.Reset(); // Reset the event to block
-            String recvData = this.seiralPort.ReadLine();
-            //dataReceivedEvent.Set(); // Set the event to unblock
-
-            //스레드 생성 코드
-            //Invoke(new Action(() => {}));
-            /* LED 점등 유무 확인 스레드 */
-            if (recvData.StartsWith("LED :")) 
+            try 
             { 
-                Invoke(new Action(() => { Console.WriteLine(recvData); this.textArea.AppendText(recvData + "\r\n"); }));
-            }
-            /* 온도 센서 확인 스레드 */
-            if (recvData.StartsWith("TEMP :")) 
-            {
-                Invoke(new Action(() => { this.TEMP_BOX.Text = "";  this.TEMP_BOX.Text = recvData.Replace("TEMP :", "") + " °C"; }));
-                //"°C" 기호 아두이노로 불러오면 ???떠서 스튜디오 코드에서 받는걸로 수정
+            String recvData = this.seiralPort.ReadLine();
 
-            }
-            /* 조도 센서 확인 스레드 */
-            if (recvData.StartsWith("SUN :"))
+                //스레드 생성 코드
+                //Invoke(new Action(() => {}));
+                /* LED 점등 유무 확인 스레드 */
+                if (recvData.StartsWith("LED :"))
+                {
+                    Invoke(new Action(() => { Console.WriteLine(recvData); this.textArea.AppendText(recvData + "\r\n"); }));
+                }
+                /* 온도 센서 확인 스레드 */
+                if (recvData.StartsWith("TEMP :"))
+                {
+                    Invoke(new Action(() => { this.TEMP_BOX.Text = ""; this.TEMP_BOX.Text = recvData.Replace("TEMP :", "") + " °C"; }));
+                    //"°C" 기호 아두이노로 불러오면 ???떠서 스튜디오 코드에서 받는걸로 수정
+
+                }
+                /* 조도 센서 확인 스레드 */
+                if (recvData.StartsWith("SUN :"))
+                {
+                    Invoke(new Action(() => { this.SUN_BOX.Text = ""; this.SUN_BOX.Text = recvData.Replace("SUN :", ""); }));
+                }
+                /* 초음파 센서 확인 스레드 */
+                if (recvData.StartsWith("DIS :"))
+                {
+                    Invoke(new Action(() => { this.DIS_BOX.Text = ""; this.DIS_BOX.Text = recvData.Replace("DIS :", ""); }));
+                }
+            } 
+            catch(Exception ex)
             {
-                Invoke(new Action(() => { this.SUN_BOX.Text = ""; this.SUN_BOX.Text = recvData.Replace("SUN :", ""); }));
+                Console.WriteLine(ex.ToString());
+                return;
             }
-            /* 초음파 센서 확인 스레드 */
-            if (recvData.StartsWith("DIS :"))
-            {
-                Invoke(new Action(() => { this.DIS_BOX.Text = ""; this.DIS_BOX.Text = recvData.Replace("DIS :", ""); }));
-            }
+            //dataReceivedEvent.Set(); // Set the event to unblock
         }
 
         private void conn_btn_Click(object sender, EventArgs e)
@@ -150,7 +158,8 @@ namespace _01Basic
             //연결이 되어있는 경우에만 작동
             //가끔가다 연결 해제시 String recvData = this.seiralPort.ReadLine(); 이 부분과 충돌남 =>seiralPort.ReadLine의 스레드가 끝나지 않았는데 Close 시켜버리니 뜨는거 같음 Close시엔 I/O가 모두 끝나있는 상태여야함
             //그럼 모든 스레드가 끝날때 까지 기다려주는 코드가 필요한가?  => 스택오버플로우 보니 this.seiralPort.DataReceived -= SerialPort_DataRecived; 로 닫아주라고 함(똑같았음)
-            //SerialPort_DataRecived에 충돌 방지 코드 추가
+            //SerialPort_DataRecived에 충돌 방지 코드 추가 => 똑같음
+            //try catch 문으로 묶어서 오류를 던졌더니 해결 완료
             if (this.seiralPort.IsOpen) 
             {
                 try
