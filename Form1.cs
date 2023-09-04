@@ -31,12 +31,22 @@ namespace _01Basic
             }
             else
             {
-                this.PortNumber.Items.AddRange(new object[] { "COM1", "COM2" });
+                this.PortNumber.Items.AddRange(new object[] {
+                    "COM1", 
+                    "COM2",
+                    "COM3",
+                    "COM4",
+                    "COM5",
+                    "COM6",
+                    "COM7",
+                    "COM8",
+                    "COM9",
+                    "COM10",
+                    "COM11",
+                    "COM12"});
                 PortNumber.SelectedIndex = 0;
             }
         }
-
-
 
         private void PortNumber_SelectedIndexChanged(object sender, EventArgs e)
         {
