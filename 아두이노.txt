@@ -1,0 +1,28 @@
+int ledPin01 = 11;
+int ledPin02 = 13;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(ledPin01, OUTPUT);
+  pinMode(ledPin02, OUTPUT);
+}
+
+void loop() {
+  if (Serial.available()) {
+    char command = Serial.read();
+    switch(command) {
+      case '0':
+        digitalWrite(ledPin01, HIGH);
+        break;
+      case '1':
+        digitalWrite(ledPin01, LOW);
+        break;
+      case '2':
+        digitalWrite(ledPin02, HIGH);
+        break;
+      case '3':
+        digitalWrite(ledPin02, LOW);
+        break;
+    }
+  }
+}
