@@ -21,12 +21,22 @@ namespace _01Basic
         {
             InitializeComponent();
 
-            foreach (string portnumber in SerialPort.GetPortNames())
+            if (SerialPort.GetPortNames().Length > 0)
             {
-                PortNumber.Items.Add(portnumber);
+                foreach (string portnumber in SerialPort.GetPortNames())
+                {
+                    PortNumber.Items.Add(portnumber);
+                }
+                PortNumber.SelectedIndex = 0;
             }
-            PortNumber.SelectedIndex = 0;
+            else
+            {
+                this.PortNumber.Items.AddRange(new object[] { "COM1", "COM2" });
+                PortNumber.SelectedIndex = 0;
+            }
         }
+
+
 
         private void PortNumber_SelectedIndexChanged(object sender, EventArgs e)
         {

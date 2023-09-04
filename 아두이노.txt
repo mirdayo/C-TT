@@ -1,28 +1,73 @@
-int ledPin01 = 11;
-int ledPin02 = 13;
+int ledPin = 10;
+//온도
+float temp;
+//조도
+const int sunPin = A1;
+//초음파
+const int trig_pin = 11;
+const int echo_pin = 12;
+//LED 상태 추적 변수
+bool isLedOn = false; 
 
 void setup() {
   Serial.begin(9600);
-  pinMode(ledPin01, OUTPUT);
-  pinMode(ledPin02, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+  //초음파
+  pinMode(trig_pin,OUTPUT);
+  pinMode(echo_pin,INPUT);
+
 }
 
 void loop() {
   if (Serial.available()) {
-    char command = Serial.read();
-    switch(command) {
-      case '0':
-        digitalWrite(ledPin01, HIGH);
-        break;
-      case '1':
-        digitalWrite(ledPin01, LOW);
-        break;
-      case '2':
-        digitalWrite(ledPin02, HIGH);
-        break;
-      case '3':
-        digitalWrite(ledPin02, LOW);
-        break;
+    char inValue = Serial.read();
+
+    if(inValue == '1') {
+      digitalWrite(ledPin,HIGH);
+      Serial.println("LED : ON");
+    } else if(inValue == '0') {
+      digitalWrite(ledPin,LOW);
+      Serial.println("LED : OFF");
     }
   }
+  //온도
+  int val = analogRead(A0);
+  temp = val*0.48828125;  //화씨 -> 섭씨 변경
+  Serial.print("TEMP : ");
+  Serial.println(temp);
+
+  //조도
+  int sunValue = analogRead(sunPin);
+  Serial.print("SUN : ");
+  Serial.println(sunValue);
+  if(sunValue<100) {
+    digitalWrite(ledPin,LOW);
+    Serial.println("SUN LED : OFF");
+  }
+
+  //초음파
+  digitalWrite(trig_pin,LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig_pin,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig_pin,LOW);
+
+  long duration = pulseIn(echo_pin,HIGH);
+  long distance = (duration/2)/29.1;
+
+  Serial.print("DIS : ");
+  Serial.print(distance);
+  Serial.println("cm");
+
+if(distance < 5 && !isLedOn) {
+    digitalWrite(ledPin, HIGH);
+    Serial.println("DIS LED : ON");
+    isLedOn = true; // LED가 켜져있음을 표시
+  } else if(distance >= 6 && isLedOn) { // distance가 6 이상이고, LED가 켜져있는 경우에만
+    digitalWrite(ledPin, LOW);
+    Serial.println("DIS LED : OFF");
+    isLedOn = false; // LED가 꺼져있음을 표시
+  }
+  
+  delay(500);
 }
